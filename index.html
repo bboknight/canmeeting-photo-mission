@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>캔미팅 포토미션 랜덤 룰렛</title>
+<style>
+:root{--navy:#172554;--blue:#2563eb;--sky:#dbeafe;--orange:#f97316;--bg:#f5f7fb;--ink:#182230;--muted:#667085;--line:#e5eaf2;--green:#0f766e}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(145deg,#eef4ff 0%,#f8fafc 48%,#fff7ed 100%);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 18px 48px}
+header{text-align:center;margin-bottom:24px}
+.kicker{display:inline-block;background:#dbeafe;color:#1d4ed8;font-weight:800;font-size:12px;letter-spacing:.08em;padding:7px 12px;border-radius:99px}
+h1{font-size:clamp(28px,4vw,42px);margin:13px 0 8px;letter-spacing:-.04em;color:var(--navy)}
+.sub{color:var(--muted);margin:0;line-height:1.6}
+.layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:20px;align-items:start}
+.panel{background:#fff;border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 12px 35px rgba(23,37,84,.07)}
+.panel h2{font-size:19px;margin:0 0 14px;color:var(--navy)}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+label{font-size:13px;font-weight:700;color:#475467}
+select,input{font:inherit;border:1px solid #cbd5e1;border-radius:12px;padding:10px 12px;background:white;color:var(--ink)}
+.wheel-area{position:relative;width:min(100%,390px);aspect-ratio:1;margin:16px auto 10px;display:grid;place-items:center}
+.wheel{width:100%;height:100%;border-radius:50%;border:9px solid #fff;outline:2px solid #d8e0ee;box-shadow:0 10px 28px #17255420;position:relative;overflow:hidden;background:conic-gradient(#2563eb 0deg 25.714deg,#f97316 25.714deg 51.428deg,#0f766e 51.428deg 77.142deg,#7c3aed 77.142deg 102.856deg,#eab308 102.856deg 128.57deg,#db2777 128.57deg 154.284deg,#0891b2 154.284deg 180deg,#4f46e5 180deg 205.714deg,#ea580c 205.714deg 231.428deg,#16a34a 231.428deg 257.142deg,#9333ea 257.142deg 282.856deg,#0284c7 282.856deg 308.57deg,#be123c 308.57deg 334.284deg,#65a30d 334.284deg 360deg);transition:transform 4s cubic-bezier(.12,.72,.12,1)}
+.wheel-label{position:absolute;left:50%;top:50%;width:50%;height:0;transform-origin:left center;color:white;font-weight:900;text-shadow:0 1px 3px #0008;font-size:clamp(10px,1.4vw,13px)}
+.wheel-label span{display:block;transform:translateY(-50%);padding-left:24px;white-space:nowrap}
+.pointer{position:absolute;z-index:3;top:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:30px solid #172554;filter:drop-shadow(0 2px 2px #0002)}
+.hub{position:absolute;z-index:2;width:76px;height:76px;border-radius:50%;background:white;border:6px solid #172554;display:grid;place-items:center;font-weight:900;color:#172554;box-shadow:0 3px 10px #0002}
+.primary{border:0;background:linear-gradient(135deg,#2563eb,#4338ca);color:white;font-weight:850;font-size:16px;padding:15px 20px;border-radius:14px;cursor:pointer;box-shadow:0 7px 16px #2563eb30;transition:transform .15s,opacity .15s;width:100%}
+.primary:hover{transform:translateY(-1px)}.primary:disabled{opacity:.55;cursor:wait}
+.note{font-size:12px;color:var(--muted);line-height:1.6;text-align:center;margin:12px 0 0}
+.common{border:1px solid #fed7aa;background:#fff7ed;border-radius:16px;padding:16px;margin-bottom:16px}
+.tag{display:inline-block;border-radius:8px;padding:5px 8px;font-size:11px;font-weight:900;background:#ffedd5;color:#9a3412;margin-bottom:8px}
+.common h3{margin:0 0 5px;font-size:18px}.common p{margin:0;color:#7c2d12;font-size:13px;line-height:1.55}
+.results{display:grid;gap:12px}
+.mission{border:1px solid var(--line);border-radius:16px;padding:15px;display:grid;grid-template-columns:43px 1fr;gap:12px;align-items:start}
+.num{width:40px;height:40px;border-radius:13px;background:#eff6ff;color:#1d4ed8;display:grid;place-items:center;font-weight:900;font-size:15px}
+.mission h3{margin:1px 0 5px;font-size:16px}.mission p{margin:0;font-size:13px;color:#475467;line-height:1.55}.eval{font-size:11px;color:var(--green);font-weight:800;margin-top:7px}
+.empty{padding:28px 16px;border:1px dashed #cbd5e1;border-radius:16px;text-align:center;color:var(--muted);line-height:1.7}
+.result-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:14px}.result-head h2{margin:0}
+.pill{font-size:12px;background:#ecfdf3;color:#027a48;border-radius:99px;padding:6px 10px;font-weight:800}
+.actions{display:flex;gap:9px;margin-top:14px}.secondary{border:1px solid #cbd5e1;background:#fff;color:#344054;padding:11px 13px;border-radius:12px;font-weight:750;cursor:pointer;flex:1}.secondary:hover{background:#f8fafc}
+.history-panel{margin-top:20px}.history-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.history-item{border:1px solid var(--line);border-radius:14px;padding:13px;background:#fbfcff}.history-item strong{display:block;margin-bottom:7px}.history-item p{font-size:12px;color:#475467;margin:4px 0;line-height:1.45}
+.smallbtn{border:0;background:transparent;color:#2563eb;font-weight:800;cursor:pointer;padding:5px 0}
+footer{text-align:center;color:#98a2b3;font-size:12px;margin-top:22px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.panel{padding:18px}.wheel-area{width:min(100%,340px)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="kicker">TEAM PHOTO MISSION</span>
+  <h1>🎯 캔미팅 포토미션 룰렛</h1>
+  <p class="sub">공통 미션 1개 + 랜덤 미션 2개<br>돌리고, 뽑고, 팀만의 사진 미션을 완성하세요!</p>
+</header>
+<div class="layout">
+  <section class="panel">
+    <h2>🎡 미션 추첨</h2>
+    <div class="wheel-area">
+      <div class="pointer"></div>
+      <div class="wheel" id="wheel"></div>
+      <div class="hub">DRAW</div>
+    </div>
+    <button class="primary" id="drawBtn">🎲 추첨 시작!</button>
+    <p class="note">1~14번 미션 중 서로 다른 2개가 추첨됩니다.<br>조와 조 사이에는 같은 미션이 나올 수 있습니다.</p>
+  </section>
+  <section class="panel">
+    <div class="result-head">
+      <h2 id="resultTitle">📋 추첨 결과</h2>
+      <span class="pill" id="status">추첨 대기</span>
+    </div>
+    <div class="common">
+      <span class="tag">공통 미션 · 전 조 필수</span>
+      <h3>유닛장님 닮은꼴 찾기</h3>
+      <p>가장 닮은 대상 찾기 (꼭 인물이 아니라도 OK)<br><b>평가 포인트:</b> 모두가 인정할 것</p>
+    </div>
+    <div class="results" id="results">
+      <div class="empty">「추첨 시작!」 버튼을 누르면<br>랜덤 미션 2개가 표시됩니다.<br>공통 미션은 위에 고정되어 있습니다.</div>
+    </div>
+    <div class="actions">
+      <button class="secondary" id="redrawBtn">다시 추첨</button>
+      <button class="secondary" id="copyBtn">결과 복사</button>
+    </div>
+  </section>
+</div>
+<footer>캔미팅 조별 포토미션 · 엑셀 최종 목록 기준 · 브라우저에서 바로 사용 가능</footer>
+</div>
+<script>
+const missions = [
+ {n:1,t:"우리가 서울의 주인공이다",d:"DDP를 배경으로 영화 포스터처럼 조원 전원이 주인공인 단체 사진 찍기",e:"구도, 포즈, 팀워크"},
+ {n:2,t:"우리 조는 하나다",d:"조원 전원이 똑같은 포즈 또는 하나의 동작을 완벽하게 맞춰 찍기",e:"단합, 완성도"},
+ {n:3,t:"동묘에서 발견한 보물",d:"동묘 벼룩시장에서 가장 신기하거나 독특한 물건을 찾아 사진으로 남기기",e:"발견력, 재미"},
+ {n:4,t:"서울의 과거와 미래",d:"오래된 건물이나 골목과 현대적인 건축물을 한 프레임에 담기",e:"관찰력, 메시지"},
+ {n:5,t:"서울에서 가장 힙한 순간 또는 장소",d:"투어 중 발견한 가장 감각적인 장면을 패션 화보처럼 촬영하기",e:"감각, 구도"},
+ {n:6,t:"K-드라마 주인공 되기",d:"로맨스, 코미디, 재벌 드라마 중 하나를 정해 포스터 사진 만들기 또는 드라마·영화에 나온 장소 찾아 사진으로 남기기",e:"연기, 스토리"},
+ {n:7,t:"발로 완성하는 서울",d:"조원들의 발이나 신발을 활용해 서울의 길과 어울리는 독특한 사진을 찍고 GIF 또는 짧은 영상으로 남기기",e:"아이디어, 구도"},
+ {n:8,t:"서울 랜드마크를 손안에 넣어라",d:"남산타워·숭례문 등 랜드마크를 손으로 잡거나 머리 위에 올린 것처럼 착시 사진 찍기",e:"창의력, 착시"},
+ {n:9,t:"인간 문화재를 찾아라",d:"주변 동상이나 조형물의 자세를 팀원 전원이 똑같이 따라 하기",e:"재현, 팀워크"},
+ {n:10,t:"우리 팀 단체 점프샷",d:"팀원 전원이 공중에 떠 있는 순간을 한 컷에 담기",e:"팀워크, 순발력"},
+ {n:11,t:"몸으로 회사 이름 만들기",d:"팀원들의 몸으로 숫자, 알파벳 또는 회사 이름의 첫 글자를 표현하기",e:"팀워크, 창의력"},
+ {n:12,t:"사진 속 숨은 그림 찾기",d:"사진 한 장에 조원들이 각자 다른 위치에서 숨어 있거나 자연스럽게 등장하도록 구성하기",e:"구성, 관찰력"},
+ {n:13,t:"우리 팀 단합력 테스트",d:"팀원 전원이 힘을 합쳐 하트나 별 모양을 몸으로 표현하기",e:"팀워크, 창의력"},
+ {n:14,t:"서울을 움직이는 사람들",d:"건물을 밀거나 버스를 손가락으로 들어 올리는 듯한 착시 사진 찍기",e:"착시, 창의력"}
+];
+const wheel=document.getElementById("wheel");
+const drawBtn=document.getElementById("drawBtn"), results=document.getElementById("results"), status=document.getElementById("status");
+let rotation=0, currentResult=null;
+function makeWheel(){
+ wheel.innerHTML="";
+ missions.forEach((m,i)=>{
+  const lab=document.createElement("div"); lab.className="wheel-label";
+  lab.style.transform=`rotate(${i*360/14+360/28}deg)`;
+  const span=document.createElement("span"); span.textContent=String(m.n).padStart(2,"0");
+  lab.appendChild(span); wheel.appendChild(lab);
+ });
+}
+function chooseTwo(){
+ const pool=[...missions];
+ for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+ return pool.slice(0,2);
+}
+function missionCard(m){
+ return `<article class="mission"><div class="num">${String(m.n).padStart(2,"0")}</div><div><h3>${escapeHtml(m.t)}</h3><p>${escapeHtml(m.d)}</p><div class="eval">평가 포인트 · ${escapeHtml(m.e)}</div></div></article>`;
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function renderResult(picks){
+ currentResult={picks};
+ document.getElementById("resultTitle").textContent="📋 추첨 결과";
+ status.textContent="추첨 완료";
+ results.innerHTML=picks.map(m=>missionCard(m)).join("");
+}
+function draw(){
+ if(drawBtn.disabled)return;
+ const picks=chooseTwo();
+ drawBtn.disabled=true; status.textContent="룰렛 회전 중…";
+ const extra=1440+Math.floor(Math.random()*1440);
+ rotation+=extra+(360-((rotation+extra)%360));
+ wheel.style.transform=`rotate(${rotation}deg)`;
+ setTimeout(()=>{
+   renderResult(picks);
+   drawBtn.disabled=false;
+ },4100);
+}
+function copyResult(){
+ if(!currentResult){alert("먼저 추첨을 진행해주세요.");return;}
+ const lines=[`캔미팅 포토미션`,`공통 미션: 유닛장님 닮은꼴 찾기`,`- 가장 닮은 대상 찾기 (꼭 인물이 아니라도 OK)`,...currentResult.picks.map((m,i)=>`랜덤 미션 ${i+1}: ${m.n}번 ${m.t}\n- ${m.d}`)];
+ const text=lines.join("\n");
+ if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(()=>alert("추첨 결과를 복사했습니다.")).catch(()=>fallbackCopy(text));}
+ else fallbackCopy(text);
+}
+function fallbackCopy(text){const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");alert("추첨 결과를 복사했습니다.");}catch(e){alert(text);}ta.remove();}
+drawBtn.addEventListener("click",draw);
+document.getElementById("redrawBtn").addEventListener("click",draw);
+document.getElementById("copyBtn").addEventListener("click",copyResult);
+makeWheel();
+</script>
+</body>
+</html>
